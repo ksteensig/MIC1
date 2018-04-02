@@ -1,7 +1,7 @@
 #include "mic1.h"
 
 int32_t bbus(MIC1_t *mic) {
-  switch (mic->control_store[mic->MPC].bits.B) {
+  switch (mic->control_store[mic->MPC].B) {
     case REG_MDR:
       return mic->MDR;
     case REG_PC:
@@ -24,7 +24,7 @@ int32_t bbus(MIC1_t *mic) {
 }
 
 void cbus(MIC1_t *mic, int32_t value) {
-  uint8_t C = mic->control_store[mic->MPC].bits.C;
+  uint8_t C = mic->control_store[mic->MPC].C;
 
   if (C & 0x001) {
     mic->MAR = (uint32_t)value;
@@ -61,7 +61,7 @@ void updateNZ(MIC1_t *mic, int32_t value) {
 }
 
 int32_t alu(MIC1_t *mic) {
-  uint8_t alu_op = mic->control_store[mic->MPC].bits.ALU;
+  uint8_t alu_op = mic->control_store[mic->MPC].ALU;
   int32_t tmp;
 
   switch (alu_op & 0x3F) {
@@ -129,7 +129,7 @@ int32_t alu(MIC1_t *mic) {
 }
 
 int32_t shifter(MIC1_t *mic, int32_t value) {
-  uint8_t shift_op = mic->control_store[mic->MPC].bits.ALU;
+  uint8_t shift_op = mic->control_store[mic->MPC].ALU;
   int32_t tmp;
 
   switch ((shift_op & 0xC0) >> 6) {
@@ -143,11 +143,11 @@ int32_t shifter(MIC1_t *mic, int32_t value) {
 }
 
 void addr(MIC1_t *mic) {
-  uint8_t JMPC = mic->control_store[mic->MPC].bits.JMPC;
-  uint8_t JAMZ = mic->control_store[mic->MPC].bits.JAMZ;
-  uint8_t JAMN = mic->control_store[mic->MPC].bits.JAMN;
+  uint8_t JMPC = mic->control_store[mic->MPC].JMPC;
+  uint8_t JAMZ = mic->control_store[mic->MPC].JAMZ;
+  uint8_t JAMN = mic->control_store[mic->MPC].JAMN;
   uint8_t MBR = mic->MBR;
-  uint16_t ADDR = mic->control_store[mic->MPC].bits.ADDR;
+  uint16_t ADDR = mic->control_store[mic->MPC].ADDR;
 
   if (JMPC) {
     mic->MPC = MBR | ADDR;
@@ -169,11 +169,11 @@ void fetch(MIC1_t *mic) {
 }
 
 void mic1_interp(MIC1_t *mic) {
-  struct control_store_s MIR;
+  control_store_t MIR;
   int32_t value;
 
   while (1) {
-    MIR = mic->control_store[mic->MPC].bits;
+    MIR = mic->control_store[mic->MPC];
     value = shifter(mic, alu(mic));
 
     if (MIR.M == 1) {

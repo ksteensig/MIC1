@@ -32,7 +32,7 @@ typedef enum {
   REG_OPC,
 } REG_ADDR_t;
 
-struct control_store_s {
+typedef struct {
   uint16_t ADDR : 9;
   uint8_t JAMN  : 1;
   uint8_t JAMZ  : 1;
@@ -41,11 +41,6 @@ struct control_store_s {
   uint16_t C    : 9;
   uint8_t M     : 3;
   uint8_t B     : 4;
-};
-
-typedef union {
-  struct control_store_s bits;
-  uint64_t full : 36;
 } control_store_t;
 
 typedef struct MIC1_s {
@@ -66,12 +61,19 @@ typedef struct MIC1_s {
   int32_t H, TOS;
 } MIC1_t;
 
-int32_t alu(MIC1_t *mic);
+//update N and Z flag based on if value is negative or zero
 void updateNZ(MIC1_t *mic, int32_t value);
-int32_t bbus(MIC1_t *mic);
+
+int32_t alu(MIC1_t *mic);
 int32_t shifter(MIC1_t *mic, int32_t value);
-void addr(MIC1_t *mic);
+
+//read what's on the B-bus
+int32_t bbus(MIC1_t *mic);
+//write C-bus value to specified registers
 void cbus(MIC1_t *mic, int32_t value);
+
+//update the MPC based on the executed instruction
+void addr(MIC1_t *mic);
 
 void fetch(MIC1_t *mic);
 void write(MIC1_t *mic);

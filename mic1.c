@@ -64,6 +64,7 @@ int32_t alu(MIC1_t *mic) {
   uint8_t alu_op = mic->control_store[mic->MPC].ALU;
   int32_t tmp;
 
+  // 0x3F masks all the non-ALU bits in ALU (masks shift control bits)
   switch (alu_op & 0x3F) {
     case RETURN_A:
       updateNZ(mic, mic->H);
@@ -132,10 +133,13 @@ int32_t shifter(MIC1_t *mic, int32_t value) {
   uint8_t shift_op = mic->control_store[mic->MPC].ALU;
   int32_t tmp;
 
+
+  // 0xC0 masks all the non-SHIFT bits in ALU (masks ALU control bits)
+  // afterwards this is shifted 6 to the right to remove the non-SHIFT bits
   switch ((shift_op & 0xC0) >> 6) {
-    case 0x01:
+    case SHIFT_RIGHT:
       return value >> 8;
-    case 0x02:
+    case SHIFT_LEFT:
       return value << 8;
     default:
       return value;
@@ -169,7 +173,7 @@ void fetch(MIC1_t *mic) {
 }
 
 void mic1_interp(MIC1_t *mic) {
-  control_store_t MIR;
+  MIR_t MIR;
   int32_t value;
 
   while (1) {

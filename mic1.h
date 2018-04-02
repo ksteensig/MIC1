@@ -49,7 +49,7 @@ typedef union {
 } control_store_t;
 
 typedef struct MIC1_s {
-  int32_t program[2048];
+  int8_t program[2048];
   int32_t data[2048];
   int32_t stack[2048];
   int32_t constant[2048];
@@ -61,7 +61,7 @@ typedef struct MIC1_s {
 
   uint32_t MAR;
   int32_t MDR;
-  union { int8_t MBR; uint8_t MBRU; };
+  union { int32_t MBR; uint32_t MBRU; };
   uint32_t PC, OPC, SP, LV, CPP;
   int32_t H, TOS;
 } MIC1_t;
@@ -71,6 +71,10 @@ void updateNZ(MIC1_t *mic, int32_t value);
 int32_t bbus(MIC1_t *mic);
 int32_t shifter(MIC1_t *mic, int32_t value);
 void addr(MIC1_t *mic);
-void cbus(MIC1_t *mic);
+void cbus(MIC1_t *mic, int32_t value);
+
+void fetch(MIC1_t *mic);
+void write(MIC1_t *mic);
+void read(MIC1_t *mic);
 
 void mic1_interp(MIC1_t *mic);

@@ -23,6 +23,30 @@ int32_t bbus(MIC1_t *mic) {
   }
 }
 
+void cbus(MIC1_t *mic, int32_t value) {
+  uint8_t C = mic->control_store[mic->MPC].bits.C;
+
+  if (C & 0x001) {
+    mic->MAR = (uint32_t)value;
+  } else if (C & 0x002) {
+    mic->MDR = value;
+  } else if (C & 0x004) {
+    mic->PC = (uint32_t)value;
+  } else if (C & 0x008) {
+    mic->SP = (uint32_t)value;
+  } else if (C & 0x010) {
+    mic->LV = (uint32_t)value;
+  } else if (C & 0x020) {
+    mic->CPP = (uint32_t)value;
+  } else if (C & 0x040) {
+    mic->TOS = value;
+  } else if (C & 0x080) {
+    mic->OPC = (uint32_t)value;
+  } else if (C & 0x100) {
+    mic->H = value;
+  }
+}
+
 void updateNZ(MIC1_t *mic, int32_t value) {
   if (value == 0) {
     mic->N = 0;
@@ -120,36 +144,46 @@ int32_t shifter(MIC1_t *mic, int32_t value) {
 
 void addr(MIC1_t *mic) {
   uint8_t JMPC = mic->control_store[mic->MPC].bits.JMPC;
+  uint8_t JAMZ = mic->control_store[mic->MPC].bits.JAMZ;
+  uint8_t JAMN = mic->control_store[mic->MPC].bits.JAMN;
   uint8_t MBR = mic->MBR;
   uint16_t ADDR = mic->control_store[mic->MPC].bits.ADDR;
 
   if (JMPC) {
     mic->MPC = MBR | ADDR;
+  } else {
+    mic->MPC = ADDR | ((JAMZ | JAMN) << 8);
   }
 }
 
-void cbus(MIC1_t *mic) {
-  int32_t value = alu(mic);
-  value = shifter(mic, value);
-  uint8_t C = mic->control_store[mic->MPC].bits.C;
+void read(MIC1_t *mic) {
+    mic->MDR = mic->data[mic->MAR];
+}
 
-  if (C & 0x001) {
-    mic->MAR = (uint32_t)value;
-  } else if (C & 0x002) {
-    mic->MDR = value;
-  } else if (C & 0x004) {
-    mic->PC = (uint32_t)value;
-  } else if (C & 0x008) {
-    mic->SP = (uint32_t)value;
-  } else if (C & 0x010) {
-    mic->LV = (uint32_t)value;
-  } else if (C & 0x020) {
-    mic->CPP = (uint32_t)value;
-  } else if (C & 0x040) {
-    mic->TOS = value;
-  } else if (C & 0x080) {
-    mic->OPC = (uint32_t)value;
-  } else if (C & 0x100) {
-    mic->H = value;
+void write(MIC1_t *mic) {
+    mic->data[mic->MAR] = mic->MDR;
+}
+
+void fetch(MIC1_t *mic) {
+    mic->MBR = mic->program[mic->PC];
+}
+
+void mic1_interp(MIC1_t *mic) {
+  struct control_store_s MIR;
+  int32_t value;
+
+  while (1) {
+    MIR = mic->control_store[mic->MPC].bits;
+    value = shifter(mic, alu(mic));
+
+    if (MIR.M == 1) {
+        fetch(mic);
+    } else if (MIR.M == 2) {
+        write(mic);
+    } else if (MIR.M == 4) {
+        read(mic);
+    }
+
+    addr(mic);
   }
 }

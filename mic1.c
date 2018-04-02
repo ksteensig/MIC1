@@ -1,9 +1,9 @@
 #include "mic1.h"
 
 int32_t bbus(MIC1_t *mic) {
-  switch (mic->control_store.bits.B) {
+  switch (mic->control_store[mic->MPC].bits.B) {
     case REG_MDR:
-      return mic->MDR
+      return mic->MDR;
     case REG_PC:
       return mic->PC;
     case REG_MBR:
@@ -23,7 +23,7 @@ int32_t bbus(MIC1_t *mic) {
   }
 }
 
-void updateNZ(MIC_1 *mic, int32_t value) {
+void updateNZ(MIC1_t *mic, int32_t value) {
   if (value == 0) {
     mic->N = 0;
     mic->Z = 1;

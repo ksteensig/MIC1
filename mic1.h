@@ -67,7 +67,7 @@ typedef struct MIC1_s {
 } MIC1_t;
 
 int32_t alu(MIC1_t *mic);
-void updateNZ(MIC_1 *mic, int32_t value);
+void updateNZ(MIC1_t *mic, int32_t value);
 int32_t bbus(MIC1_t *mic);
 int32_t shifter(MIC1_t *mic, int32_t value);
 void addr(MIC1_t *mic);

@@ -152,7 +152,7 @@ void addr(MIC1_t *mic) {
   if (JMPC) {
     mic->MPC = MBR | ADDR;
   } else {
-    mic->MPC = ADDR | ((JAMZ | JAMN) << 8);
+    mic->MPC = ADDR | (((JAMZ & mic->Z) | (JAMN & mic->N)) << 8);
   }
 }
 

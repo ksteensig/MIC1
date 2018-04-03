@@ -1,7 +1,8 @@
 #include <stdint.h>
 #include <stdio.h>
 
-typedef enum {
+// ALU operations
+enum {
   RETURN_A = 0x18,
   RETURN_B = 0x14,
   INVERSE_A = 0x1A,
@@ -20,9 +21,9 @@ typedef enum {
   MINUS_ONE = 0x32,
   SHIFT_LEFT = 0x01,
   SHIFT_RIGHT = 0x02
-} ALU_OP_t;
+};
 
-typedef enum {
+enum {
   REG_MDR,
   REG_PC,
   REG_MBR,
@@ -32,7 +33,7 @@ typedef enum {
   REG_CPP,
   REG_TOS,
   REG_OPC,
-} REG_ADDR_t;
+};
 
 // MIR: micro instruction registers
 typedef struct {

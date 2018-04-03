@@ -67,66 +67,61 @@ int32_t alu(MIC1_t *mic) {
   // 0x3F masks all the non-ALU bits in ALU (masks shift control bits)
   switch (alu_op & 0x3F) {
     case RETURN_A:
-      updateNZ(mic, mic->H);
-      return mic->H;
+      tmp = mic->H;
+
+      break;
     case RETURN_B:
       tmp = bbus(mic);
       updateNZ(mic, tmp);
       return tmp;
     case INVERSE_A:
-      updateNZ(mic, ~mic->H);
-      return ~mic->H;
+      tmp = ~(mic->H);
+      break;
     case INVERSE_B:
       tmp = bbus(mic);
-      updateNZ(mic, ~tmp);
-      return ~tmp;
+      break;
     case A_PLUS_B:
       tmp = mic->H + bbus(mic);
-      updateNZ(mic, tmp);
-      return tmp;
+      break;
     case A_PLUS_B_PLUS_1:
       tmp = mic->H + bbus(mic) + 1;
-      updateNZ(mic, tmp);
-      return tmp;
+      break;
     case A_PLUS_1:
       tmp = mic->H + 1;
-      updateNZ(mic, tmp);
-      return tmp;
+      break;
     case B_PLUS_1:
       tmp = bbus(mic) + 1;
-      updateNZ(mic, tmp);
-      return tmp;
+      break;
     case B_MINUS_A:
       tmp = bbus(mic) - mic->H;
-      updateNZ(mic, tmp);
-      return tmp;
+      break;
     case B_MINUS_1:
       tmp = bbus(mic) - 1;
-      updateNZ(mic, tmp);
-      return tmp;
+      break;
     case MINUS_A:
-      updateNZ(mic, -(mic->H));
-      return -(mic->H);
+      tmp = -(mic->H);
+      break;
     case A_AND_B:
       tmp = mic->H & bbus(mic);
-      updateNZ(mic, tmp);
-      return tmp;
+      break;
     case A_OR_B:
       tmp = mic->H | bbus(mic);
-      updateNZ(mic, tmp);
-      return tmp;
+      break;
     case ZERO:
-      updateNZ(mic, 0);
-      return 0;
+      tmp = 0;
+      break;
     case ONE:
-      updateNZ(mic, 1);
-      return 1;
+      tmp = 1;
+      break;
     case MINUS_ONE:
-      updateNZ(mic, -1);
-      return -1;
+      tmp = -1;
+      break;
     default:
-      return 0;
+      tmp = 0;
   }
+
+  updateNZ(mic, tmp);
+  return tmp;
 }
 
 int32_t shifter(MIC1_t *mic, int32_t value) {
